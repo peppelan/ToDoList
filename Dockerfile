@@ -3,4 +3,6 @@ FROM alpine:latest
 
 ADD todolist /usr/bin
 
+EXPOSE 8080
+
 ENTRYPOINT ["/usr/bin/todolist"]
