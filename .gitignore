@@ -1,5 +1,5 @@
 .idea/
 .DS_Store
-pkg
-todolist
-src/github.com
+pkg/
+bin/
+src/github.com/
