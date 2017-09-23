@@ -18,10 +18,9 @@ func TestRead(t *testing.T) {
 
 	resp, err := http.Get(*url)
 
-	require.Nil(t, err, "Received unexpected error")
-
 	defer resp.Body.Close()
 
+	require.Nil(t, err, "Received unexpected error")
 	require.Equal(t, 200, resp.StatusCode, "Received unexpected status code")
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
