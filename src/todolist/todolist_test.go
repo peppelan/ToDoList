@@ -1,10 +1,10 @@
 package main
 
-import(
+import (
+	"io/ioutil"
+	"net/http/httptest"
 	"strings"
 	"testing"
-	"net/http/httptest"
-	"io/ioutil"
 
 	"github.com/stretchr/testify/require"
 )

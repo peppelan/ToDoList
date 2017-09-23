@@ -1,11 +1,11 @@
 package acceptance_tests
 
 import (
-	"testing"
 	"flag"
-	"net/http"
-	"io/ioutil"
 	"github.com/stretchr/testify/require"
+	"io/ioutil"
+	"net/http"
+	"testing"
 )
 
 var (
