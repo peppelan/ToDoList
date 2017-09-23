@@ -5,6 +5,7 @@ import (
 	"flag"
 	"net/http"
 	"io/ioutil"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -17,28 +18,15 @@ func TestRead(t *testing.T) {
 
 	resp, err := http.Get(*url)
 
-	if err != nil {
-		t.Errorf("Received unexpected error: %s", err)
-		return
-	}
+	require.Nil(t, err, "Received unexpected error")
 
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		t.Errorf("Received unexpected status code: %d", resp.StatusCode)
-		return
-	}
+	require.Equal(t, 200, resp.StatusCode, "Received unexpected status code")
 
-	bodyBytes, err2 := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	bodyString := string(bodyBytes)
 
-	if err2 != nil {
-		t.Errorf("Received unexpected error: %s", err2)
-		return
-	}
-
-	if bodyString != expected {
-		t.Errorf("Received unexpected response: '%s', expected: '%s'", bodyString, expected)
-		return
-	}
+	require.Nil(t, err, "Received unexpected error")
+	require.Equal(t, expected, bodyString, "Received unexpected response body")
 }
