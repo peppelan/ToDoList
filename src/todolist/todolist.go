@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"sync"
+	"encoding/json"
 )
 
 // Starts two HTTP services:
@@ -46,7 +47,12 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func todoIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Todo Index!")
+	todos := Todos{
+		Todo{Name: "Write presentation"},
+		Todo{Name: "Host meetup"},
+	}
+
+	json.NewEncoder(w).Encode(todos)
 }
 
 func todoShow(w http.ResponseWriter, r *http.Request) {
