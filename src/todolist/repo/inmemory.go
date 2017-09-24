@@ -36,7 +36,7 @@ func (r *InMemoryRepo) FindAll() spi.Todos {
 
 func (r *InMemoryRepo) Create(t spi.Todo) spi.Todo {
 	r.currentId += 1
-	t.Id = string(r.currentId)
+	t.Id = fmt.Sprintf("%d", r.currentId)
 	r.todos = append(r.todos, t)
 	return t
 }

@@ -6,9 +6,11 @@ import (
 	"strings"
 	"testing"
 
+	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"todolist/repo"
+	"todolist/spi"
 )
 
 func TestNonHandledEndpoint(t *testing.T) {
@@ -69,4 +71,21 @@ func TestTodoShow(t *testing.T) {
 
 	require.Equal(t, 200, resp.StatusCode)
 	require.Equal(t, expected, respString)
+}
+
+func TestTodoCreate(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
+	response, _ := json.Marshal(spi.Todo{Name: "Test the application", Id: "3"})
+
+	req := httptest.NewRequest("POST", "http://example.com/todos", bytes.NewReader(request))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+
+	resp := w.Result()
+	body, _ := ioutil.ReadAll(resp.Body)
+	respString := string(body)
+
+	require.Equal(t, 201, resp.StatusCode)
+	require.Equal(t, string(response)+"\n", respString)
 }
