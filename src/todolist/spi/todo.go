@@ -1,4 +1,4 @@
-package main
+package spi
 
 import "time"
 

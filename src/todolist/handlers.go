@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"todolist/repo"
 
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
+	"todolist/spi"
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +19,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 func todoIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(todos); err != nil {
+	if err := json.NewEncoder(w).Encode(repo.FindAll()); err != nil {
 		panic(err)
 	}
 }
@@ -29,7 +31,7 @@ func todoShow(w http.ResponseWriter, r *http.Request) {
 }
 
 func todoCreate(w http.ResponseWriter, r *http.Request) {
-	var todo Todo
+	var todo spi.Todo
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		panic(err)
@@ -45,7 +47,7 @@ func todoCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t := RepoCreateTodo(todo)
+	t := repo.Create(todo)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(t); err != nil {

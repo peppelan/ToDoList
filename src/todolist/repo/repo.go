@@ -1,35 +1,42 @@
-package main
+package repo
 
-import "fmt"
+import (
+	"fmt"
+	"todolist/spi"
+)
 
 var currentId int
 
-var todos Todos
+var todos spi.Todos
 
 // Give us some seed data
 func init() {
-	RepoCreateTodo(Todo{Name: "Write presentation"})
-	RepoCreateTodo(Todo{Name: "Host meetup"})
+	Create(spi.Todo{Name: "Write presentation"})
+	Create(spi.Todo{Name: "Host meetup"})
 }
 
-func RepoFindTodo(id int) Todo {
+func Find(id int) spi.Todo {
 	for _, t := range todos {
 		if t.Id == id {
 			return t
 		}
 	}
 	// return empty Todo if not found
-	return Todo{}
+	return spi.Todo{}
 }
 
-func RepoCreateTodo(t Todo) Todo {
+func FindAll() spi.Todos {
+	return todos
+}
+
+func Create(t spi.Todo) spi.Todo {
 	currentId += 1
 	t.Id = currentId
 	todos = append(todos, t)
 	return t
 }
 
-func RepoDestroyTodo(id int) error {
+func Destroy(id int) error {
 	for i, t := range todos {
 		if t.Id == id {
 			todos = append(todos[:i], todos[i+1:]...)
