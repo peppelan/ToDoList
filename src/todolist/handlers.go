@@ -26,7 +26,11 @@ func todoIndex(w http.ResponseWriter, r *http.Request) {
 func todoShow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	todoId := vars["todoId"]
-	fmt.Fprintln(w, "Todo show:", todoId)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(repository.Find(todoId)); err != nil {
+		panic(err)
+	}
 }
 
 func todoCreate(w http.ResponseWriter, r *http.Request) {

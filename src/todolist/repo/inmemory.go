@@ -20,7 +20,7 @@ func NewInMemoryRepo() *InMemoryRepo {
 	return r
 }
 
-func (r *InMemoryRepo) Find(id int) spi.Todo {
+func (r *InMemoryRepo) Find(id string) spi.Todo {
 	for _, t := range r.todos {
 		if t.Id == id {
 			return t
@@ -36,12 +36,12 @@ func (r *InMemoryRepo) FindAll() spi.Todos {
 
 func (r *InMemoryRepo) Create(t spi.Todo) spi.Todo {
 	r.currentId += 1
-	t.Id = r.currentId
+	t.Id = string(r.currentId)
 	r.todos = append(r.todos, t)
 	return t
 }
 
-func (r *InMemoryRepo) Destroy(id int) error {
+func (r *InMemoryRepo) Destroy(id string) error {
 	for i, t := range r.todos {
 		if t.Id == id {
 			r.todos = append(r.todos[:i], r.todos[i+1:]...)

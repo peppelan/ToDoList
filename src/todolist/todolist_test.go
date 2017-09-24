@@ -53,3 +53,20 @@ func TestTodoIndex(t *testing.T) {
 	require.Equal(t, 200, resp.StatusCode)
 	require.Equal(t, expected, respString)
 }
+
+func TestTodoShow(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+	bytes, _ := json.Marshal(repository.Find("0"))
+	expected := string(bytes) + "\n"
+
+	req := httptest.NewRequest("GET", "http://example.com/todos/0", nil)
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+
+	resp := w.Result()
+	body, _ := ioutil.ReadAll(resp.Body)
+	respString := string(body)
+
+	require.Equal(t, 200, resp.StatusCode)
+	require.Equal(t, expected, respString)
+}
