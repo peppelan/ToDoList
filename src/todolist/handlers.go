@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"todolist/spi"
@@ -52,6 +53,7 @@ func todoCreate(w http.ResponseWriter, r *http.Request) {
 
 	t := repository.Create(todo)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set("Location", "/todos/"+template.URLQueryEscaper(t.Id))
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(t); err != nil {
 		panic(err)

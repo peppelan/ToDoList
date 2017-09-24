@@ -76,7 +76,7 @@ func TestTodoShow(t *testing.T) {
 func TestTodoCreate(t *testing.T) {
 	repository = repo.NewInMemoryRepo()
 	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
-	response, _ := json.Marshal(spi.Todo{Name: "Test the application", Id: "3"})
+	expectedResponse, _ := json.Marshal(spi.Todo{Name: "Test the application", Id: "3"})
 
 	req := httptest.NewRequest("POST", "http://example.com/todos", bytes.NewReader(request))
 	w := httptest.NewRecorder()
@@ -85,9 +85,11 @@ func TestTodoCreate(t *testing.T) {
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)
 	respString := string(body)
+	location := resp.Header.Get("Location")
 
 	require.Equal(t, 201, resp.StatusCode)
-	require.Equal(t, string(response)+"\n", respString)
+	require.Equal(t, string(expectedResponse)+"\n", respString)
+	require.Equal(t, "/todos/3", location)
 }
 
 func TestTodoCreateInvalid(t *testing.T) {
