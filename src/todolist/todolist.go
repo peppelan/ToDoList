@@ -3,12 +3,9 @@ package main
 
 import (
 	"expvar"
-	"fmt"
 	"log"
 	"net/http"
 
-	"encoding/json"
-	"github.com/gorilla/mux"
 	"sync"
 )
 
@@ -25,38 +22,11 @@ func main() {
 }
 
 func registerBusinessServer(wg *sync.WaitGroup) {
-	log.Fatal(http.ListenAndServe(":8080", handler()))
+	log.Fatal(http.ListenAndServe(":8080", NewRouter()))
 	wg.Done()
 }
 
 func registerExpvarServer(wg *sync.WaitGroup) {
 	log.Fatal(http.ListenAndServe(":8081", expvar.Handler()))
 	wg.Done()
-}
-
-func handler() http.Handler {
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", index)
-	router.HandleFunc("/todos", todoIndex)
-	router.HandleFunc("/todos/{todoId}", todoShow)
-	return router
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome!")
-}
-
-func todoIndex(w http.ResponseWriter, r *http.Request) {
-	todos := Todos{
-		Todo{Name: "Write presentation"},
-		Todo{Name: "Host meetup"},
-	}
-
-	json.NewEncoder(w).Encode(todos)
-}
-
-func todoShow(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	todoId := vars["todoId"]
-	fmt.Fprintln(w, "Todo show:", todoId)
 }
