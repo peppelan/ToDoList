@@ -89,3 +89,15 @@ func TestTodoCreate(t *testing.T) {
 	require.Equal(t, 201, resp.StatusCode)
 	require.Equal(t, string(response)+"\n", respString)
 }
+
+func TestTodoCreateInvalid(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+
+	req := httptest.NewRequest("POST", "http://example.com/todos", strings.NewReader("Whatever!"))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+
+	resp := w.Result()
+
+	require.Equal(t, 422, resp.StatusCode)
+}
