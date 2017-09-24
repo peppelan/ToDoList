@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-mkdir -p bin
+rm -rf bin && mkdir -p bin
 CGO_ENABLED=0 GOOS=linux go build -o bin/todolist todolist
 docker build -t to-do-list .
 
