@@ -7,13 +7,19 @@ import (
 	"net/http"
 
 	"sync"
+	"todolist/repo"
+	"todolist/spi"
 )
+
+var repository spi.Repo
 
 // Starts two HTTP services:
 //	one at port 8080 for exposing the ToDoList REST service,
 //	one at port 8081 for exposing the expvar service.
 // The application runs as long as both HTTP services are up
 func main() {
+	repository = repo.NewInMemoryRepo()
+
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 	go registerBusinessServer(wg)

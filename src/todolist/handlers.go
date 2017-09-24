@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"todolist/repo"
 
 	"github.com/gorilla/mux"
 	"io"
@@ -19,7 +18,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 func todoIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(repo.FindAll()); err != nil {
+	if err := json.NewEncoder(w).Encode(repository.FindAll()); err != nil {
 		panic(err)
 	}
 }
@@ -47,7 +46,7 @@ func todoCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t := repo.Create(todo)
+	t := repository.Create(todo)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(t); err != nil {
