@@ -7,9 +7,9 @@ import (
 	"log"
 	"net/http"
 
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"sync"
-	"encoding/json"
 )
 
 // Starts two HTTP services:
@@ -19,8 +19,8 @@ import (
 func main() {
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
-	go registerBusinessServer(wg);
-	go registerExpvarServer(wg);
+	go registerBusinessServer(wg)
+	go registerExpvarServer(wg)
 	wg.Wait()
 }
 
