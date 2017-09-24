@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-# Unit tests
+echo "--- Running Unit tests..."
 go test todolist
 
-# Prepare docker container
+echo "--- Preparing docker image..."
 ./build_docker.sh > /dev/null
+
+echo "--- Running docker container..."
 ./run_docker.sh
 
-# Acceptance tests
+echo "--- Running Acceptance tests..."
 ./run_acceptance_tests.sh

@@ -4,7 +4,6 @@ package main
 import (
 	"expvar"
 	"fmt"
-	"html"
 	"log"
 	"net/http"
 
@@ -37,9 +36,21 @@ func registerExpvarServer(wg *sync.WaitGroup) {
 func handler() http.Handler {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", index)
+	router.HandleFunc("/todos", todoIndex)
+	router.HandleFunc("/todos/{todoId}", todoShow)
 	return router
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	fmt.Fprintln(w, "Welcome!")
+}
+
+func todoIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Todo Index!")
+}
+
+func todoShow(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	todoId := vars["todoId"]
+	fmt.Fprintln(w, "Todo show:", todoId)
 }

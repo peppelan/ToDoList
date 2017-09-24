@@ -14,7 +14,7 @@ var (
 
 func TestRead(t *testing.T) {
 
-	expected := string("Hello, \"/\"")
+	expected := string("Welcome!\n")
 
 	resp, err := http.Get(*url)
 

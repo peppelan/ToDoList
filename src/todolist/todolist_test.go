@@ -32,5 +32,5 @@ func TestRoot(t *testing.T) {
 	respString := string(body)
 
 	require.Equal(t, 200, resp.StatusCode)
-	require.Equal(t, respString, "Hello, \"/\"")
+	require.Equal(t, "Welcome!\n", respString)
 }
