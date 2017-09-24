@@ -1,5 +1,5 @@
 // Provides a simple REST API implementing a basic to-do list
-package todolist
+package main
 
 import (
 	"fmt"

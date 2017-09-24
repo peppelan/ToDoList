@@ -1,4 +1,4 @@
-package todolist
+package main
 
 import (
 	"io/ioutil"
