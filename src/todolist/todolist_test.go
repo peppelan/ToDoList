@@ -12,7 +12,7 @@ import (
 func TestNonHandledEndpoint(t *testing.T) {
 	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
 	w := httptest.NewRecorder()
-	Handler().ServeHTTP(w, req)
+	handler().ServeHTTP(w, req)
 
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -25,7 +25,7 @@ func TestNonHandledEndpoint(t *testing.T) {
 func TestRoot(t *testing.T) {
 	req := httptest.NewRequest("GET", "http://example.com/", nil)
 	w := httptest.NewRecorder()
-	Handler().ServeHTTP(w, req)
+	handler().ServeHTTP(w, req)
 
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)

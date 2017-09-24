@@ -4,5 +4,6 @@ FROM alpine:latest
 ADD bin/todolist /usr/bin
 
 EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["/usr/bin/todolist"]
