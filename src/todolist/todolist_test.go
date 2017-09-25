@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
+	"net/http"
 	"todolist/repo"
 	"todolist/spi"
 )
@@ -102,4 +103,26 @@ func TestTodoCreateInvalid(t *testing.T) {
 	resp := w.Result()
 
 	require.Equal(t, 422, resp.StatusCode)
+}
+
+func TestTodoDelete(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+
+	req := httptest.NewRequest("DELETE", "http://example.com/todos/1", strings.NewReader("Whatever!"))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+	resp := w.Result()
+	require.Equal(t, 200, resp.StatusCode)
+	require.Equal(t, 1, len(repository.FindAll()))
+}
+
+func TestTodoDeleteInvalid(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+
+	req := httptest.NewRequest("DELETE", "http://example.com/todos/3", strings.NewReader("Whatever!"))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+	resp := w.Result()
+	require.Equal(t, 404, resp.StatusCode)
+	require.Equal(t, 2, len(repository.FindAll()))
 }

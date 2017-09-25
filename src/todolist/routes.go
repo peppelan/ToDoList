@@ -39,4 +39,10 @@ var routes = Routes{
 		"/todos",
 		todoCreate,
 	},
+	Route{
+		"TodoDelete",
+		"DELETE",
+		"/todos/{todoId}",
+		todoDelete,
+	},
 }

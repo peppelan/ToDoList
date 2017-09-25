@@ -41,12 +41,12 @@ func (r *InMemoryRepo) Create(t spi.Todo) spi.Todo {
 	return t
 }
 
-func (r *InMemoryRepo) Destroy(id string) error {
+func (r *InMemoryRepo) Destroy(id string) bool {
 	for i, t := range r.todos {
 		if t.Id == id {
 			r.todos = append(r.todos[:i], r.todos[i+1:]...)
-			return nil
+			return true
 		}
 	}
-	return fmt.Errorf("Could not find Todo with id of %d to delete", id)
+	return false
 }
