@@ -9,35 +9,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
-	"net/http"
 	"todolist/repo"
 	"todolist/spi"
 )
 
 func TestNonHandledEndpoint(t *testing.T) {
-	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
+	code, resp := serveRequest("GET", "http://example.com/foo")
 
-	resp := w.Result()
-	body, _ := ioutil.ReadAll(resp.Body)
-	respString := string(body)
-
-	require.Equal(t, 404, resp.StatusCode)
-	require.Contains(t, strings.ToLower(respString), "not found")
+	require.Equal(t, 404, code)
+	require.Contains(t, strings.ToLower(*resp), "not found")
 }
 
 func TestRoot(t *testing.T) {
-	req := httptest.NewRequest("GET", "http://example.com/", nil)
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
+	code, resp := serveRequest("GET", "http://example.com/")
 
-	resp := w.Result()
-	body, _ := ioutil.ReadAll(resp.Body)
-	respString := string(body)
-
-	require.Equal(t, 200, resp.StatusCode)
-	require.Equal(t, "Welcome!\n", respString)
+	require.Equal(t, 200, code)
+	require.Equal(t, "Welcome!\n", *resp)
 }
 
 func TestTodoIndex(t *testing.T) {
@@ -45,16 +32,10 @@ func TestTodoIndex(t *testing.T) {
 	bytes, _ := json.Marshal(repository.FindAll())
 	expected := string(bytes) + "\n"
 
-	req := httptest.NewRequest("GET", "http://example.com/todos", nil)
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
+	code, resp := serveRequest("GET", "http://example.com/todos")
 
-	resp := w.Result()
-	body, _ := ioutil.ReadAll(resp.Body)
-	respString := string(body)
-
-	require.Equal(t, 200, resp.StatusCode)
-	require.Equal(t, expected, respString)
+	require.Equal(t, 200, code)
+	require.Equal(t, expected, *resp)
 }
 
 func TestTodoShow(t *testing.T) {
@@ -62,16 +43,10 @@ func TestTodoShow(t *testing.T) {
 	bytes, _ := json.Marshal(repository.Find("0"))
 	expected := string(bytes) + "\n"
 
-	req := httptest.NewRequest("GET", "http://example.com/todos/0", nil)
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
+	code, resp := serveRequest("GET", "http://example.com/todos/0")
 
-	resp := w.Result()
-	body, _ := ioutil.ReadAll(resp.Body)
-	respString := string(body)
-
-	require.Equal(t, 200, resp.StatusCode)
-	require.Equal(t, expected, respString)
+	require.Equal(t, 200, code)
+	require.Equal(t, expected, *resp)
 }
 
 func TestTodoCreate(t *testing.T) {
@@ -96,33 +71,34 @@ func TestTodoCreate(t *testing.T) {
 func TestTodoCreateInvalid(t *testing.T) {
 	repository = repo.NewInMemoryRepo()
 
-	req := httptest.NewRequest("POST", "http://example.com/todos", strings.NewReader("Whatever!"))
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
+	code, _ := serveRequest("POST", "http://example.com/todos")
 
-	resp := w.Result()
-
-	require.Equal(t, 422, resp.StatusCode)
+	require.Equal(t, 422, code)
 }
 
 func TestTodoDelete(t *testing.T) {
 	repository = repo.NewInMemoryRepo()
 
-	req := httptest.NewRequest("DELETE", "http://example.com/todos/1", strings.NewReader("Whatever!"))
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
-	resp := w.Result()
-	require.Equal(t, 200, resp.StatusCode)
+	code, _ := serveRequest("DELETE", "http://example.com/todos/1")
+	require.Equal(t, 200, code)
 	require.Equal(t, 1, len(repository.FindAll()))
 }
 
 func TestTodoDeleteInvalid(t *testing.T) {
 	repository = repo.NewInMemoryRepo()
 
-	req := httptest.NewRequest("DELETE", "http://example.com/todos/3", strings.NewReader("Whatever!"))
+	code, _ := serveRequest("DELETE", "http://example.com/todos/3")
+	require.Equal(t, 404, code)
+	require.Equal(t, 2, len(repository.FindAll()))
+}
+
+// Serves a given request, returns status code and response body
+func serveRequest(method string, target string) (int, *string) {
+	req := httptest.NewRequest(method, target, nil)
 	w := httptest.NewRecorder()
 	NewRouter().ServeHTTP(w, req)
-	resp := w.Result()
-	require.Equal(t, 404, resp.StatusCode)
-	require.Equal(t, 2, len(repository.FindAll()))
+	res := w.Result()
+	resBody, _ := ioutil.ReadAll(res.Body)
+	respString := string(resBody)
+	return res.StatusCode, &respString
 }
