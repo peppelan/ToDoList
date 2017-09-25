@@ -25,18 +25,25 @@ func todoIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Responds 200 (OK) or TODO 404 (Not Found) for non-stored IDs
+// Responds 200 (OK) or 404 (Not Found) for non-stored IDs
 func todoShow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	todoId := vars["todoId"]
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(repository.Find(todoId)); err != nil {
-		panic(err)
+
+	todo := repository.Find(todoId)
+
+	if nil == todo {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(todo); err != nil {
+			panic(err)
+		}
 	}
 }
 
-// Responds 201 (Created) or TODO 409 (Conflict) for already-stored IDs
+// Responds 201 (Created)
 func todoCreate(w http.ResponseWriter, r *http.Request) {
 	var todo spi.Todo
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -54,13 +61,10 @@ func todoCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	t := repository.Create(todo)
+	id := repository.Create(todo)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.Header().Set("Location", "/todos/"+template.URLQueryEscaper(t.Id))
+	w.Header().Set("Location", "/todos/"+template.URLQueryEscaper(id))
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(t); err != nil {
-		panic(err)
-	}
 }
 
 // Responds 200 (OK) when deleted, or 404 (Not Found) for non-stored IDs

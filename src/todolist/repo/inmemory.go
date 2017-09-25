@@ -20,25 +20,25 @@ func NewInMemoryRepo() *InMemoryRepo {
 	return r
 }
 
-func (r *InMemoryRepo) Find(id string) spi.Todo {
+func (r *InMemoryRepo) Find(id string) *spi.Todo {
 	for _, t := range r.todos {
 		if t.Id == id {
-			return t
+			return &t
 		}
 	}
-	// return empty Todo if not found
-	return spi.Todo{}
+	// return nil if not found
+	return nil
 }
 
 func (r *InMemoryRepo) FindAll() spi.Todos {
 	return r.todos
 }
 
-func (r *InMemoryRepo) Create(t spi.Todo) spi.Todo {
+func (r *InMemoryRepo) Create(t spi.Todo) string {
 	r.currentId += 1
 	t.Id = fmt.Sprintf("%d", r.currentId)
 	r.todos = append(r.todos, t)
-	return t
+	return t.Id
 }
 
 func (r *InMemoryRepo) Destroy(id string) bool {
