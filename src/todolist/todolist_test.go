@@ -96,6 +96,45 @@ func TestTodoDeleteInvalid(t *testing.T) {
 	require.Equal(t, 2, len(repository.FindAll()))
 }
 
+func TestTodoUpdate(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
+
+	req := httptest.NewRequest("PUT", "http://example.com/todos/1", bytes.NewReader(request))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+
+	resp := w.Result()
+
+	require.Equal(t, 200, resp.StatusCode)
+}
+
+func TestTodoUpdateInconsistent(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+	request, _ := json.Marshal(spi.Todo{Name: "Test the application", Id: "whatever"})
+
+	req := httptest.NewRequest("PUT", "http://example.com/todos/1", bytes.NewReader(request))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+
+	resp := w.Result()
+
+	require.Equal(t, 406, resp.StatusCode)
+}
+
+func TestTodoNotFound(t *testing.T) {
+	repository = repo.NewInMemoryRepo()
+	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
+
+	req := httptest.NewRequest("PUT", "http://example.com/todos/5", bytes.NewReader(request))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+
+	resp := w.Result()
+
+	require.Equal(t, 404, resp.StatusCode)
+}
+
 // Serves a given request, returns status code and response body
 func serveRequest(method string, target string) (int, *string) {
 	req := httptest.NewRequest(method, target, nil)

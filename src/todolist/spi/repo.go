@@ -13,6 +13,10 @@ type Repo interface {
    Create(t Todo) string
 
    // Removes the to-do with the given ID from the repo.
-   // returns true when the object was found and removed, false when the object was not found,
+   // Returns true when the object was found and removed, false when the object was not found.
    Destroy(id string) bool
+
+   // Updates a to-do.
+   // Returns true when the object was found and updated, false when the object was not found.
+   Update(t Todo) bool
 }

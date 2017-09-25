@@ -50,3 +50,13 @@ func (r *InMemoryRepo) Destroy(id string) bool {
 	}
 	return false
 }
+
+func (r *InMemoryRepo) Update(todo spi.Todo) bool {
+	for i, t := range r.todos {
+		if t.Id == todo.Id {
+			r.todos[i] = todo
+			return true
+		}
+	}
+	return false
+}
