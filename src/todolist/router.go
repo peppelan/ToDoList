@@ -28,16 +28,33 @@ func NewRouter() *mux.Router {
 func logger(inner http.Handler, name string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		responseWriter := NewLoggingResponseWriter(w)
 
-		inner.ServeHTTP(w, r)
+		inner.ServeHTTP(responseWriter, r)
 
 		log.Printf(
-			"%s\t%s\t%s\t%s\t%d us",
+			"%s\t%s\t%s\t%s\t%d (%s)\t%d us",
 			r.RemoteAddr,
 			r.Method,
 			r.RequestURI,
 			name,
+			responseWriter.statusCode,
+			http.StatusText(responseWriter.statusCode),
 			time.Since(start).Nanoseconds()/1e3,
 		)
 	})
+}
+
+type loggingResponseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func NewLoggingResponseWriter(w http.ResponseWriter) *loggingResponseWriter {
+	return &loggingResponseWriter{w, http.StatusOK}
+}
+
+func (lrw *loggingResponseWriter) WriteHeader(code int) {
+	lrw.statusCode = code
+	lrw.ResponseWriter.WriteHeader(code)
 }
