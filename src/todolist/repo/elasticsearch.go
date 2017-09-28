@@ -4,6 +4,7 @@ import (
 	"todolist/spi"
 	"gopkg.in/olivere/elastic.v5"
 	"os"
+	"context"
 )
 
 var (
@@ -61,7 +62,13 @@ func (r *ElasticSearchRepo) FindAll() spi.Todos {
 }
 
 func (r *ElasticSearchRepo) Create(t spi.Todo) string {
-	return ""
+	res, err := elastic.NewIndexService(r.client).Index(esIndex).Type(esType).BodyJson(t).Do(context.TODO())
+
+	if (nil != err) {
+		panic(err)
+	}
+
+	return res.Id
 }
 
 func (r *ElasticSearchRepo) Destroy(id string) bool {
