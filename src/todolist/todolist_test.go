@@ -122,21 +122,6 @@ func TestTodoUpdate(t *testing.T) {
 	require.Equal(t, 200, resp.StatusCode)
 }
 
-func TestTodoUpdateInconsistent(t *testing.T) {
-	repository = repo.NewRepo()
-	repository.Create(spi.Todo{Name: "Prepare interview"})
-
-	request, _ := json.Marshal(spi.Todo{Name: "Test the application", Id: "whatever"})
-
-	req := httptest.NewRequest("PUT", "http://example.com/todos/1", bytes.NewReader(request))
-	w := httptest.NewRecorder()
-	NewRouter().ServeHTTP(w, req)
-
-	resp := w.Result()
-
-	require.Equal(t, 406, resp.StatusCode)
-}
-
 func TestTodoNotFound(t *testing.T) {
 	repository = repo.NewRepo()
 	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})

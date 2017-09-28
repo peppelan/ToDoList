@@ -12,7 +12,7 @@ type Repo interface {
    Find(id string) *Todo
 
    // Fetches all to-do's
-   FindAll() Todos
+   FindAll() []Todo
 
    // Creates a to-do.
    // Returns the ID of the created object
@@ -24,5 +24,5 @@ type Repo interface {
 
    // Updates a to-do.
    // Returns true when the object was found and updated, false when the object was not found.
-   Update(t Todo) bool
+   Update(id string, t Todo) bool
 }

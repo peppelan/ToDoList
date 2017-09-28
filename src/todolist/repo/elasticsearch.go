@@ -57,7 +57,7 @@ func (r *ElasticSearchRepo) Find(id string) *spi.Todo {
 	return nil
 }
 
-func (r *ElasticSearchRepo) FindAll() spi.Todos {
+func (r *ElasticSearchRepo) FindAll() []spi.Todo {
 	return nil
 }
 
@@ -75,6 +75,6 @@ func (r *ElasticSearchRepo) Destroy(id string) bool {
 	return false
 }
 
-func (r *ElasticSearchRepo) Update(t spi.Todo) bool {
+func (r *ElasticSearchRepo) Update(id string, t spi.Todo) bool {
 	return false
 }

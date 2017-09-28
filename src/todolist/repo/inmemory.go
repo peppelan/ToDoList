@@ -7,7 +7,7 @@ import (
 
 type InMemoryRepo struct {
 	currentId int
-	todos spi.Todos
+	todos map[string] *spi.Todo
 }
 
 func NewInMemoryRepo() *InMemoryRepo {
@@ -16,46 +16,42 @@ func NewInMemoryRepo() *InMemoryRepo {
 }
 
 func (r *InMemoryRepo) Init() error {
+	r.todos = make(map[string] *spi.Todo)
 	return nil
 }
 
 func (r *InMemoryRepo) Find(id string) *spi.Todo {
-	for _, t := range r.todos {
-		if t.Id == id {
-			return &t
-		}
-	}
-	// return nil if not found
-	return nil
+	return r.todos[id]
 }
 
-func (r *InMemoryRepo) FindAll() spi.Todos {
-	return r.todos
+func (r *InMemoryRepo) FindAll() []spi.Todo {
+	// FIXME: this is very thread-unsafe
+	v := make([]spi.Todo, 0, len(r.todos))
+	for  _, value := range r.todos {
+		v = append(v, *value)
+	}
+	return v
 }
 
 func (r *InMemoryRepo) Create(t spi.Todo) string {
 	r.currentId += 1
-	t.Id = fmt.Sprintf("%d", r.currentId)
-	r.todos = append(r.todos, t)
-	return t.Id
+	id := fmt.Sprintf("%d", r.currentId)
+	r.todos[id] = &t
+	return id
 }
 
 func (r *InMemoryRepo) Destroy(id string) bool {
-	for i, t := range r.todos {
-		if t.Id == id {
-			r.todos = append(r.todos[:i], r.todos[i+1:]...)
-			return true
-		}
-	}
-	return false
+	isPresent := nil != r.todos[id]
+	delete(r.todos, id)
+	return isPresent
 }
 
-func (r *InMemoryRepo) Update(todo spi.Todo) bool {
-	for i, t := range r.todos {
-		if t.Id == todo.Id {
-			r.todos[i] = todo
-			return true
-		}
+func (r *InMemoryRepo) Update(id string, todo spi.Todo) bool {
+	isPresent := nil != r.todos[id]
+	if isPresent {
+		r.todos[id] = &todo
+		return true
+	} else {
+		return false
 	}
-	return false
 }

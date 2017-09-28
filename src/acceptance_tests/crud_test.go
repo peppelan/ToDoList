@@ -28,17 +28,17 @@ func TestFullCrudSession(t *testing.T) {
 	// Create
 	myTodoAddress := testRequest(t, "POST", "/todos", string(request), 201, nil)
 	println("Working with " + myTodoAddress)
-	myTodo.Id = strings.Replace(myTodoAddress, "/todos/", "", -1)
+	myTodoId := strings.Replace(myTodoAddress, "/todos/", "", -1)
 
 	// Read
-	checkTodo(t, myTodo)
+	checkTodo(t, myTodoId, myTodo)
 
 	// Update
 	testRequest(t, "POST", "/todos", string(request), 201, nil)
-	updatedTodo := spi.Todo{Id: myTodo.Id, Name: "Test the application a bit more"}
+	updatedTodo := spi.Todo{Name: "Test the application a bit more"}
 	myTodoJson, _ := json.Marshal(updatedTodo)
 	testRequest(t, "PUT", myTodoAddress, string(myTodoJson), 200, nil)
-	checkTodo(t, updatedTodo)
+	checkTodo(t, myTodoId, updatedTodo)
 
 	// Delete
 	testRequest(t, "DELETE", myTodoAddress, "", 200, nil)
@@ -72,8 +72,8 @@ func testRequest(t *testing.T,
 }
 
 // Checks that the to-do in the system matches expected one
-func checkTodo(t *testing.T, todo spi.Todo) {
+func checkTodo(t *testing.T, id string, todo spi.Todo) {
 	response, _ := json.Marshal(todo)
 	responseStr := string(response) + "\n"
-	testRequest(t, "GET", "/todos/"+todo.Id, "", 200, &responseStr)
+	testRequest(t, "GET", "/todos/" + id, "", 200, &responseStr)
 }

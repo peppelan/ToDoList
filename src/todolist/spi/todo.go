@@ -4,9 +4,6 @@ import "time"
 
 // Domain object for my application
 type Todo struct {
-	// Unique ID of the to-do
-	Id string `json:"id"`
-
 	// Short name of the to-do
 	Name string `json:"name"`
 
@@ -20,4 +17,3 @@ type Todo struct {
 	Due time.Time `json:"due"`
 }
 
-type Todos []Todo

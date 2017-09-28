@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"errors"
 	"github.com/gorilla/mux"
 	"html/template"
 	"io"
@@ -65,11 +64,6 @@ func todoCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if "" != todo.Id {
-		w.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
 	id := repository.Create(todo)
 	w.Header().Set("Location", "/todos/"+template.URLQueryEscaper(id))
 	w.WriteHeader(http.StatusCreated)
@@ -92,8 +86,6 @@ func todoDelete(w http.ResponseWriter, r *http.Request) {
 
 // Responds 200 (OK) when updated, 404 (Not Found) for non-stored IDs,
 // 422 (Unprocessable entity) when the provided object does not correctly translate to a to-do
-// 406 (Not acceptable) when the provided to-do has an ID that is different from the one provided
-//     to the endpoint.
 func todoUpdate(w http.ResponseWriter, r *http.Request) {
 
 	// Get the to-do ID to update
@@ -119,20 +111,7 @@ func todoUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ensure that the endpoint ID is consistent with the one
-	// eventually provided with the object
-	if "" != todo.Id && todoId != todo.Id {
-		w.WriteHeader(http.StatusNotAcceptable)
-		if err := json.NewEncoder(w).Encode(errors.New("Endpoint ID '" + todoId +
-			"' does not correspond to what provided in the object '" + todo.Id + "'")); err != nil {
-			panic(err)
-		}
-		return
-	}
-
-	todo.Id = todoId
-
-	updated := repository.Update(todo)
+	updated := repository.Update(todoId, todo)
 	if updated {
 		w.WriteHeader(http.StatusOK)
 	} else {
