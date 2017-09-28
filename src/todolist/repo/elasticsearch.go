@@ -74,8 +74,27 @@ func (r *ElasticSearchRepo) Find(id string) *spi.Todo {
 	return ret
 }
 
-func (r *ElasticSearchRepo) FindAll() map[string] *spi.Todo {
-	return nil
+func (r *ElasticSearchRepo) FindAll() map[string] spi.Todo {
+	searchResult, err := r.client.Search().Index(esIndex).Type(esType).Do(context.TODO())
+
+	if nil != err {
+		panic(err)
+	}
+
+	ret := make(map[string] spi.Todo)
+	// Iterate through results
+	for _, hit := range searchResult.Hits.Hits {
+		// Deserialize hit.Source into a To-do
+		var t spi.Todo
+		err := json.Unmarshal(*hit.Source, &t)
+		if err != nil {
+			panic(err)
+		}
+
+		ret[hit.Id] = t
+	}
+
+	return ret
 }
 
 func (r *ElasticSearchRepo) Create(t spi.Todo) string {
