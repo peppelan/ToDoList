@@ -24,13 +24,9 @@ func (r *InMemoryRepo) Find(id string) *spi.Todo {
 	return r.todos[id]
 }
 
-func (r *InMemoryRepo) FindAll() []spi.Todo {
-	// FIXME: this is very thread-unsafe
-	v := make([]spi.Todo, 0, len(r.todos))
-	for  _, value := range r.todos {
-		v = append(v, *value)
-	}
-	return v
+func (r *InMemoryRepo) FindAll() map[string] *spi.Todo {
+	// FIXME: do not use for production code :-)
+	return r.todos
 }
 
 func (r *InMemoryRepo) Create(t spi.Todo) string {

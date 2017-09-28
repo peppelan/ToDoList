@@ -57,7 +57,7 @@ func (r *ElasticSearchRepo) Find(id string) *spi.Todo {
 	return nil
 }
 
-func (r *ElasticSearchRepo) FindAll() []spi.Todo {
+func (r *ElasticSearchRepo) FindAll() map[string] *spi.Todo {
 	return nil
 }
 

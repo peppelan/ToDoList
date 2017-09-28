@@ -12,7 +12,7 @@ type Repo interface {
    Find(id string) *Todo
 
    // Fetches all to-do's
-   FindAll() []Todo
+   FindAll() map[string] *Todo
 
    // Creates a to-do.
    // Returns the ID of the created object
