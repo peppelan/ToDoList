@@ -3,15 +3,18 @@ package repo
 import (
 	"todolist/spi"
 	"gopkg.in/olivere/elastic.v5"
+	"context"
+	"fmt"
 )
 
 type ElasticSearchRepo struct {
 	client *elastic.Client
 }
 
+// Creates the client
 func NewElasticSearchRepo(esUrl string, esUser string, esPwd string) *ElasticSearchRepo {
 	r := new (ElasticSearchRepo)
-	client, err := elastic.NewClient(
+	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(esUrl),
 	    elastic.SetMaxRetries(2),
 	    elastic.SetBasicAuth(esUser, esPwd))
@@ -24,7 +27,15 @@ func NewElasticSearchRepo(esUrl string, esUser string, esPwd string) *ElasticSea
 	return r
 }
 
+// Establishes connection to the ES database
 func (r *ElasticSearchRepo) Init() error {
+	resp, err := elastic.NewNodesInfoService(r.client).Human(true).Pretty(true).Do(context.TODO())
+
+	if nil!= err {
+		return err
+	}
+
+	fmt.Printf("Connected to cluster '%s'\n", resp.ClusterName)
 	return nil
 }
 
