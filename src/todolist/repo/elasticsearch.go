@@ -88,5 +88,18 @@ func (r *ElasticSearchRepo) Destroy(id string) bool {
 }
 
 func (r *ElasticSearchRepo) Update(id string, t spi.Todo) bool {
-	return false
+	// FIXME: is there a better API in Elasticsearch for failing the update if the document does not exist?
+	obj := r.Find(id)
+
+	if nil == obj {
+		return false
+	}
+
+	_, err := elastic.NewUpdateService(r.client).Index(esIndex).Type(esType).Id(id).Doc(t).Do(context.TODO())
+
+	if (nil != err) {
+		panic(err)
+	}
+
+	return true
 }
