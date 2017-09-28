@@ -55,7 +55,12 @@ func (r *ElasticSearchRepo) init() error {
 }
 
 func (r *ElasticSearchRepo) Find(id string) *spi.Todo {
-	res, err := elastic.NewGetService(r.client).Index(esIndex).Type(esType).Id(id).Do(context.TODO())
+	if !r.exists(id) {
+		return nil
+	}
+
+	res, err := r.client.Get().Index(esIndex).Type(esType).Id(id).Do(context.TODO())
+
 	if nil != err {
 		panic(err)
 	}
@@ -74,9 +79,9 @@ func (r *ElasticSearchRepo) FindAll() map[string] *spi.Todo {
 }
 
 func (r *ElasticSearchRepo) Create(t spi.Todo) string {
-	res, err := elastic.NewIndexService(r.client).Index(esIndex).Type(esType).BodyJson(t).Do(context.TODO())
+	res, err := r.client.Index().Index(esIndex).Type(esType).BodyJson(t).Do(context.TODO())
 
-	if (nil != err) {
+	if nil != err {
 		panic(err)
 	}
 
@@ -100,15 +105,13 @@ func (r *ElasticSearchRepo) Destroy(id string) bool {
 
 func (r *ElasticSearchRepo) Update(id string, t spi.Todo) bool {
 	// FIXME: is there a better API in Elasticsearch for failing the update if the document does not exist?
-	obj := r.Find(id)
-
-	if nil == obj {
+	if !r.exists(id) {
 		return false
 	}
 
-	_, err := elastic.NewUpdateService(r.client).Index(esIndex).Type(esType).Id(id).Doc(t).Do(context.TODO())
+	_, err := r.client.Update().Index(esIndex).Type(esType).Id(id).Doc(t).Do(context.TODO())
 
-	if (nil != err) {
+	if nil != err {
 		panic(err)
 	}
 
