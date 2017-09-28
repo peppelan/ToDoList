@@ -28,7 +28,7 @@ func TestRoot(t *testing.T) {
 }
 
 func TestTodoIndex(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 
 	repository.Create(spi.Todo{Name: "Prepare interview"})
 	repository.Create(spi.Todo{Name: "Do not mess up"})
@@ -43,7 +43,7 @@ func TestTodoIndex(t *testing.T) {
 }
 
 func TestTodoShow(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 
 	repository.Create(spi.Todo{Name: "Prepare interview"})
 
@@ -57,7 +57,7 @@ func TestTodoShow(t *testing.T) {
 }
 
 func TestTodoShowInvalid(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 
 	code, _ := serveRequest("GET", "http://example.com/todos/gigi")
 
@@ -65,7 +65,7 @@ func TestTodoShowInvalid(t *testing.T) {
 }
 
 func TestTodoCreate(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
 
 	req := httptest.NewRequest("POST", "http://example.com/todos", bytes.NewReader(request))
@@ -80,7 +80,7 @@ func TestTodoCreate(t *testing.T) {
 }
 
 func TestTodoCreateInvalid(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 
 	code, _ := serveRequest("POST", "http://example.com/todos")
 
@@ -88,7 +88,7 @@ func TestTodoCreateInvalid(t *testing.T) {
 }
 
 func TestTodoDelete(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	repository.Create(spi.Todo{Name: "Prepare interview"})
 	repository.Create(spi.Todo{Name: "Do not mess up"})
 
@@ -98,7 +98,7 @@ func TestTodoDelete(t *testing.T) {
 }
 
 func TestTodoDeleteInvalid(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	repository.Create(spi.Todo{Name: "Prepare interview"})
 	repository.Create(spi.Todo{Name: "Do not mess up"})
 
@@ -108,7 +108,7 @@ func TestTodoDeleteInvalid(t *testing.T) {
 }
 
 func TestTodoUpdate(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	repository.Create(spi.Todo{Name: "Prepare interview"})
 
 	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
@@ -123,7 +123,7 @@ func TestTodoUpdate(t *testing.T) {
 }
 
 func TestTodoUpdateInconsistent(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	repository.Create(spi.Todo{Name: "Prepare interview"})
 
 	request, _ := json.Marshal(spi.Todo{Name: "Test the application", Id: "whatever"})
@@ -138,7 +138,7 @@ func TestTodoUpdateInconsistent(t *testing.T) {
 }
 
 func TestTodoNotFound(t *testing.T) {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
 
 	req := httptest.NewRequest("PUT", "http://example.com/todos/1", bytes.NewReader(request))

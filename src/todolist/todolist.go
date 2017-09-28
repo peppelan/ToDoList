@@ -18,7 +18,7 @@ var repository spi.Repo
 //	one at port 8081 for exposing the expvar service.
 // The application runs as long as both HTTP services are up
 func main() {
-	repository = repo.NewInMemoryRepo()
+	repository = repo.NewRepo()
 	err := repository.Init()
 
 	if nil != err {
