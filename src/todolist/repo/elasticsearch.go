@@ -3,14 +3,31 @@ package repo
 import (
 	"todolist/spi"
 	"gopkg.in/olivere/elastic.v5"
+	"os"
 )
+
+var (
+	esUser = getEnv("ELASTICSEARCH_USERNAME", "elastic")
+	esPwd = getEnv("ELASTICSEARCH_PASSWORD", "changeme")
+
+	esIndex = getEnv("ELASTICSEARCH_INDEX", "todolist")
+	esType = getEnv("ELASTICSEARCH_TYPE", "todos")
+)
+
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
 
 type ElasticSearchRepo struct {
 	client *elastic.Client
 }
 
 // Creates the client
-func NewElasticSearchRepo(esUrl string, esUser string, esPwd string) *ElasticSearchRepo {
+func NewElasticSearchRepo(esUrl string) *ElasticSearchRepo {
 	r := new (ElasticSearchRepo)
 	client, err := elastic.NewSimpleClient(
 		elastic.SetURL(esUrl),
@@ -26,7 +43,12 @@ func NewElasticSearchRepo(esUrl string, esUser string, esPwd string) *ElasticSea
 }
 
 func (r *ElasticSearchRepo) Init() error {
-	// Nothing to do here for now
+	// Todo: retry
+	return r.init()
+}
+
+func (r *ElasticSearchRepo) init() error {
+	// TODO: create index & mappings
 	return nil
 }
 

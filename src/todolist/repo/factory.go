@@ -7,8 +7,6 @@ import (
 
 var (
 	esUrl = os.Getenv("ELASTICSEARCH_URL")
-	esUser = os.Getenv("ELASTICSEARCH_USERNAME")
-	esPwd = os.Getenv("ELASTICSEARCH_PASSWORD")
 )
 
 // Creates the appropriate repository depending on the application configuration:
@@ -21,7 +19,7 @@ func NewRepo() spi.Repo {
 	if "" == esUrl {
 		r = NewInMemoryRepo()
 	} else {
-		r = NewElasticSearchRepo(esUrl, esUser, esPwd)
+		r = NewElasticSearchRepo(esUrl)
 	}
 
 	r.Init()
