@@ -5,6 +5,7 @@ import (
 	"gopkg.in/olivere/elastic.v5"
 	"os"
 	"context"
+	"encoding/json"
 )
 
 var (
@@ -54,7 +55,18 @@ func (r *ElasticSearchRepo) init() error {
 }
 
 func (r *ElasticSearchRepo) Find(id string) *spi.Todo {
-	return nil
+	res, err := elastic.NewGetService(r.client).Index(esIndex).Type(esType).Id(id).Do(context.TODO())
+	if nil != err {
+		panic(err)
+	}
+
+	ret := new(spi.Todo)
+
+	err = json.Unmarshal(*res.Source, ret)
+	if err != nil {
+		panic(err)
+	}
+	return ret
 }
 
 func (r *ElasticSearchRepo) FindAll() map[string] *spi.Todo {
