@@ -84,7 +84,18 @@ func (r *ElasticSearchRepo) Create(t spi.Todo) string {
 }
 
 func (r *ElasticSearchRepo) Destroy(id string) bool {
-	return false
+	// FIXME: is there a better API in Elasticsearch for failing the destroy if the document does not exist?
+	if !r.exists(id) {
+		return false
+	}
+
+	resp, err := r.client.Delete().Index(esIndex).Type(esType).Id(id).Do(context.TODO())
+
+	if nil != err {
+		panic(err)
+	}
+
+	return resp.Found
 }
 
 func (r *ElasticSearchRepo) Update(id string, t spi.Todo) bool {
@@ -102,4 +113,14 @@ func (r *ElasticSearchRepo) Update(id string, t spi.Todo) bool {
 	}
 
 	return true
+}
+
+func (r *ElasticSearchRepo) exists(id string) bool {
+	res, err := r.client.Exists().Index(esIndex).Type(esType).Id(id).Do(context.TODO())
+
+	if nil != err {
+		panic(err)
+	}
+
+	return res
 }
