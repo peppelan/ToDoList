@@ -45,7 +45,8 @@ func todoShow(w http.ResponseWriter, r *http.Request) {
 }
 
 // Responds 201 (Created) when successful,
-// or 422 (Unprocessable entity) when the provided object does not correctly translate to a to-do
+// 422 (Unprocessable entity) when the provided object does not correctly translate to a to-do,
+// or 406 (Not acceptable) when an ID was provided - the application is responsible for creating it
 func todoCreate(w http.ResponseWriter, r *http.Request) {
 	var todo spi.Todo
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -61,6 +62,11 @@ func todoCreate(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(err); err != nil {
 			panic(err)
 		}
+		return
+	}
+
+	if "" != todo.Id {
+		w.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
 
