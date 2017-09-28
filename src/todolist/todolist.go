@@ -19,6 +19,11 @@ var repository spi.Repo
 // The application runs as long as both HTTP services are up
 func main() {
 	repository = repo.NewInMemoryRepo()
+	err := repository.Init()
+
+	if nil != err {
+		panic(err)
+	}
 
 	wg := new(sync.WaitGroup)
 	wg.Add(1)

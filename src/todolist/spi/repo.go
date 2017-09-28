@@ -2,6 +2,12 @@ package spi
 
 // Defines the interface that a repository of Todos should implement
 type Repo interface {
+
+   // Initializes the repository.
+   // This method, once the initialization is finished, will return 'nil' if the initialization is successful,
+   // or an explanatory error otherwise.
+   Init() error
+
    // Fetches a given to-do; returns nil when not found
    Find(id string) *Todo
 

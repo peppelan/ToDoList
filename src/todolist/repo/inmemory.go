@@ -10,14 +10,13 @@ type InMemoryRepo struct {
 	todos spi.Todos
 }
 
-// Give us some seed data
 func NewInMemoryRepo() *InMemoryRepo {
 	r := new(InMemoryRepo)
-
-	r.Create(spi.Todo{Name: "Write presentation"})
-	r.Create(spi.Todo{Name: "Host meetup"})
-
 	return r
+}
+
+func (r *InMemoryRepo) Init() error {
+	return nil
 }
 
 func (r *InMemoryRepo) Find(id string) *spi.Todo {
