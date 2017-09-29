@@ -30,6 +30,23 @@ func logger(inner http.Handler, name string) http.Handler {
 		start := time.Now()
 		responseWriter := NewLoggingResponseWriter(w)
 
+		defer func() {
+			if err := recover(); err != nil {
+				responseWriter.WriteHeader(http.StatusInternalServerError)
+
+				log.Printf(
+					"%s\t%s\t%s\t%s\t%d (%s)\t%d us: %d",
+					r.RemoteAddr,
+					r.Method,
+					r.RequestURI,
+					name,
+					responseWriter.statusCode,
+					http.StatusText(responseWriter.statusCode),
+					time.Since(start).Nanoseconds()/1e3,
+					err,
+				)
+			}
+		}()
 		inner.ServeHTTP(responseWriter, r)
 
 		log.Printf(
