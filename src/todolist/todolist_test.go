@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
 	"net/http/httptest"
 	"strings"
@@ -8,6 +9,7 @@ import (
 
 	"bytes"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"todolist/repo"
 	"todolist/spi"
@@ -135,7 +137,55 @@ func TestTodoNotFound(t *testing.T) {
 	require.Equal(t, 404, resp.StatusCode)
 }
 
-// Serves a given request, returns status code and response body
+// Mock repo that, whatever func you call, it will panic
+type StressedRepo struct {
+}
+
+func (sr *StressedRepo) Init() error {
+	panic(errors.New("OMG!!! I need to get out of here!!!"))
+}
+func (sr *StressedRepo) Find(id string) *spi.Todo {
+	panic(errors.New("OMG!!! I need to get out of here!!!"))
+}
+func (sr *StressedRepo) FindAll() map[string]spi.Todo {
+	panic(errors.New("OMG!!! I need to get out of here!!!"))
+}
+func (sr *StressedRepo) Create(t spi.Todo) string {
+	panic(errors.New("OMG!!! I need to get out of here!!!"))
+}
+func (sr *StressedRepo) Destroy(id string) bool {
+	panic(errors.New("OMG!!! I need to get out of here!!!"))
+}
+func (sr *StressedRepo) Update(id string, t spi.Todo) bool {
+	panic(errors.New("OMG!!! I need to get out of here!!!"))
+}
+
+func TestPanickingRoutes(t *testing.T) {
+	repository = &StressedRepo{}
+	request, _ := json.Marshal(spi.Todo{Name: "Test the application"})
+
+	code, _ := serveRequest("GET", "http://example.com/todos")
+	assert.Equal(t, 500, code)
+
+	code, _ = serveRequest("GET", "http://example.com/todos/1")
+	assert.Equal(t, 500, code)
+
+	req := httptest.NewRequest("POST", "http://example.com/todos", bytes.NewReader(request))
+	w := httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+	resp := w.Result()
+	assert.Equal(t, 500, resp.StatusCode)
+
+	code, _ = serveRequest("DELETE", "http://example.com/todos/1")
+	assert.Equal(t, 500, resp.StatusCode)
+
+	req = httptest.NewRequest("PUT", "http://example.com/todos/1", bytes.NewReader(request))
+	w = httptest.NewRecorder()
+	NewRouter().ServeHTTP(w, req)
+	resp = w.Result()
+	assert.Equal(t, 500, resp.StatusCode)
+}
+
 func serveRequest(method string, target string) (int, *string) {
 	req := httptest.NewRequest(method, target, nil)
 	w := httptest.NewRecorder()
