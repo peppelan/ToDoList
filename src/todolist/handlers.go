@@ -19,10 +19,10 @@ func index(w http.ResponseWriter, r *http.Request) {
 // Responds 200 (OK)
 func todoIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(repository.FindAll()); err != nil {
 		panic(err)
 	}
+	w.WriteHeader(http.StatusOK)
 }
 
 // Responds 200 (OK) or 404 (Not Found) for non-stored IDs
@@ -36,10 +36,10 @@ func todoShow(w http.ResponseWriter, r *http.Request) {
 	if nil == todo {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
-		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(todo); err != nil {
 			panic(err)
 		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -104,10 +104,10 @@ func todoUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := json.Unmarshal(body, &todo); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(http.StatusUnprocessableEntity)
 		if err := json.NewEncoder(w).Encode(err); err != nil {
 			panic(err)
 		}
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		return
 	}
 
