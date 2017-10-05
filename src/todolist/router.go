@@ -2,9 +2,15 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/ricardo-ch/go-tracing"
 	"log"
 	"net/http"
+	"os"
 	"time"
+)
+
+var (
+	zipkinUrl = os.Getenv("ZIPKIN_URL")
 )
 
 // Creates a router for the ToDoList app.
@@ -20,6 +26,12 @@ func NewRouter() *mux.Router {
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(logger(route.HandlerFunc, route.Name))
+	}
+
+	if "" != zipkinUrl {
+		// Enable zipkin logging
+		tracing.SetGlobalTracer("todolist", zipkinUrl)
+		defer tracing.FlushCollector()
 	}
 
 	return router
@@ -47,7 +59,19 @@ func logger(inner http.Handler, name string) http.Handler {
 				)
 			}
 		}()
-		inner.ServeHTTP(responseWriter, r)
+
+		if "" != zipkinUrl {
+
+			// Define a trace
+			span, ctx := tracing.CreateSpanFromClientContext(r, name, nil)
+			defer span.Finish()
+
+			// Serve the request, and propagate the new context
+			inner.ServeHTTP(responseWriter, r.WithContext(ctx))
+		} else {
+			// Serve the request only
+			inner.ServeHTTP(responseWriter, r)
+		}
 
 		log.Printf(
 			"%s\t%s\t%s\t%s\t%d (%s)\t%d us",
