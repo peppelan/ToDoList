@@ -2,7 +2,7 @@
 set -e
 
 echo "--- Running Unit tests..."
-go test todolist
+go test todolist -covermode=count -coverprofile=units.cov
 
 echo "--- Preparing docker image..."
 ./build_docker.sh > /dev/null

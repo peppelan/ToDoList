@@ -3,7 +3,7 @@
 Thanks for having a look at this thing.
 
 ## Project status
-![status](https://travis-ci.org/peppelan/ToDoList.svg?branch=master)
+[![status](https://travis-ci.org/peppelan/ToDoList.svg?branch=master)](https://travis-ci.org/peppelan/ToDoList) [![Coverage Status](https://coveralls.io/repos/github/peppelan/ToDoList/badge.svg?branch=master)](https://coveralls.io/github/peppelan/ToDoList?branch=master)
 
 ## Disclaimer
 - This is my very first project in Golang: please don't be offended by what you see here.

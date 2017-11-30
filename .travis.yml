@@ -9,6 +9,8 @@ services:
 before_install:
   - docker pull alpine
   - export GOPATH="${TRAVIS_BUILD_DIR}"
+  - go get github.com/mattn/goveralls
+  - go build github.com/mattn/goveralls
   - cd src
 install:
   - go get -t ./...
@@ -16,3 +18,5 @@ before_script:
   - cd ${TRAVIS_BUILD_DIR}
 script:
   - ./full_build_and_test.sh
+after_script:
+  - ./goveralls -coverprofile=units.cov -service=travis-ci -repotoken=$COVERALLS_TOKEN
